@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#ff6b81">
+  <link rel="manifest" href="manifest.json">
+  <title>Joyeux Anniversaire Mimi</title>
+  <style>
+    :root { --accent:#ff6b81; --bg:#fffaf7; }
+    *{box-sizing:border-box}
+    body { font-family: Arial, sans-serif; background: var(--bg); margin: 0; color: #333; text-align: center; padding: 24px 16px 40px; }
+    h1{ color:#d94a5f; margin:0 0 10px; }
+    .card { max-width: 760px; margin: 0 auto 18px; background:#fff; border:1px solid #f2d7dd; border-radius:14px; padding:16px; text-align:left; box-shadow: 0 4px 12px rgba(0,0,0,.06); }
+    .btn { display:inline-block; margin-top:12px; padding:14px 18px; border:0; border-radius:10px; background: var(--accent); color:#fff; font-size:16px; cursor:pointer; box-shadow: 0 6px 18px rgba(255,107,129,.35); }
+    .hint{font-size:14px; color:#666}
+  </style>
+</head>
+<body>
+  <h1>🎉 Joyeux Anniversaire Mimi !</h1>
+
+  <div class="card">
+    <h3>📱 Installer comme une application (Chrome Android)</h3>
+    <button id="btnInstall" class="btn" style="display:none">Installer (plein écran)</button>
+    <ol>
+      <li>Appuie sur les <b>⋮</b> en haut à droite</li>
+      <li>Sélectionne <b>Ajouter à l’écran d’accueil</b></li>
+      <li>Puis choisis <b>Installer</b> (ou <b>Créer un raccourci</b>)</li>
+      <li>Ouvre la nouvelle icône <b>❤️ Mimi</b> depuis l’accueil</li>
+    </ol>
+    <p class="hint">Astuce : si tu vois une icône avec le logo Chrome, c’est un raccourci (pas plein écran). Choisis <b>Installer</b>.</p>
+  </div>
+
+  <div class="card" style="text-align:center">
+    <p>Tu peux aussi lancer directement la surprise (fonctionne même sans installation) :</p>
+    <a class="btn" href="diapo.html">Lancer la surprise 💝</a>
+  </div>
+
+  <script>
+    if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); }
+    let deferredPrompt=null;
+    window.addEventListener('beforeinstallprompt',(e)=>{ e.preventDefault(); deferredPrompt=e; const btn=document.getElementById('btnInstall'); if(btn) btn.style.display='inline-block'; });
+    const btn=document.getElementById('btnInstall');
+    if(btn){ btn.addEventListener('click', async ()=>{ if(!deferredPrompt) return; deferredPrompt.prompt(); await deferredPrompt.userChoice; btn.style.display='none'; deferredPrompt=null; }); }
+  </script>
+</body>
+</html>
