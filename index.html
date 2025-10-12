@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#ff6b81">
+  <link rel="manifest" href="manifest.json">
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js');
+    }
+  </script>
+  <title>Joyeux Anniversaire Mimi</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #fffaf7;
+      margin: 0;
+      padding: 2em;
+      color: #333;
+      text-align: center;
+    }
+    .btn {
+      margin-top: 30px;
+      padding: 15px 25px;
+      background-color: #ff6b81;
+      color: white;
+      font-size: 1.2em;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    h1 {
+      font-size: 2em;
+      color: #e63946;
+    }
+    ol {
+      text-align: left;
+      margin: auto;
+      max-width: 600px;
+      font-size: 1.1em;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎉 Joyeux Anniversaire Mimi !</h1>
+  <p>Avant d’ouvrir ta surprise, installe-la comme une application pour un vrai plein écran :</p>
+  <ol>
+    <li>Appuie sur les trois petits points <strong>(⋮)</strong> en haut à droite</li>
+    <li>Sélectionne <strong>"Ajouter à l’écran d’accueil"</strong>, puis <strong>Ajouter</strong></li>
+    <li>Ouvre la nouvelle icône <strong>❤️ Mimi</strong> depuis l’écran d’accueil</li>
+  </ol>
+  <p>Ou lance directement la surprise :</p>
+  <button class="btn" onclick="window.location.href='diapo.html'">Lancer la surprise 💝</button>
+</body>
+</html>
