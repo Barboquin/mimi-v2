@@ -1,0 +1,121 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#ff6b81" />
+  <link rel="manifest" href="manifest.json" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Mimi" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="apple-touch-icon" href="heart-512.png" />
+  <title>Surprise Mimi</title>
+  <style>
+    :root { --bg:#fffaf7; --txt:#333; }
+    * { box-sizing: border-box; }
+    html, body { height:100%; }
+    body {
+      margin:0; background:var(--bg); color:var(--txt);
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+      height:100dvh; overflow:hidden; text-align:center; font-family: Arial, sans-serif;
+    }
+    img {
+      max-width: 90vw; max-height: 70vh;
+      border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,.2);
+      user-select: none; -webkit-user-drag: none;
+    }
+    p { font-size:1.5em; margin-top:20px; padding:0 20px; }
+    .container { cursor: pointer; }
+
+    /* Overlay transition */
+    .overlay {
+      position: fixed; inset: 0; pointer-events: none; opacity: 0; transition: opacity .8s ease;
+    }
+    .overlay.show { opacity: 1; }
+    .overlay svg { width: 100vw; height: 100vh; display:block; }
+    /* Heart animation: scale from 0 to 8x */
+    #heart-shape { transform-origin: 50% 50%; transform-box: fill-box; }
+    .play #heart-shape { animation: boom 800ms ease forwards; }
+    @keyframes boom {
+      0% { transform: scale(0.05); }
+      100% { transform: scale(8); }
+    }
+  </style>
+</head>
+<body onclick="nextSlide()">
+  <div class="container">
+    <img id="slide-img" src="https://i.imgur.com/DCDNgl0.jpeg" alt="Anniversaire Mimi" />
+    <p id="slide-text">Tu es belle, même dans la plus simple des versions de toi.</p>
+  </div>
+
+  <!-- SVG overlay for heart reveal transition -->
+  <div id="overlay" class="overlay" aria-hidden="true">
+    <svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice">
+      <defs>
+        <!-- Mask: black hides, white shows -->
+        <mask id="heartMask">
+          <rect x="0" y="0" width="100" height="100" fill="black"></rect>
+          <!-- Heart path (normalized to 100x100) -->
+          <path id="heart-shape" fill="white"
+            d="M50 86
+               C 20 66, 5 50, 5 31
+               C 5 18, 16 10, 27 10
+               C 36 10, 43 15, 50 23
+               C 57 15, 64 10, 73 10
+               C 84 10, 95 18, 95 31
+               C 95 50, 80 66, 50 86 Z" />
+        </mask>
+      </defs>
+      <!-- The next image will be injected as an <image> here -->
+      <image id="overlay-img" x="0" y="0" width="100" height="100" href="" preserveAspectRatio="xMidYMid slice" mask="url(#heartMask)"></image>
+      <!-- Optional tinted bg to soften transition -->
+      <rect x="0" y="0" width="100" height="100" fill="rgba(255,255,255,0.0)"></rect>
+    </svg>
+  </div>
+
+  <script>
+    // Slides data
+    const slides = [
+      {"img":"https://i.imgur.com/DCDNgl0.jpeg","text":"Tu es belle, même dans la plus simple des versions de toi."},
+      {"img":"https://i.imgur.com/b3LdfWF.jpeg","text":"Toi, les photos, c’est une histoire d’amour… et chaque cliché est une œuvre."},
+      {"img":"https://i.imgur.com/Fshz30s.jpeg","text":"Ta gentillesse éclaire mes journées comme un soleil doux."},
+      {"img":"https://i.imgur.com/VzijnKr.jpeg","text":"Derrière ton regard tendre, il y a une femme forte, qui avance toujours."},
+      {"img":"https://i.imgur.com/lmDRmCC.jpeg","text":"Même au travail, tu rayonnes… ton sérieux m’impressionne."},
+      {"img":"https://i.imgur.com/lI71y3V.jpeg","text":"Toi + Moi = Nous. Et c’est ma plus belle équation."},
+      {"img":"https://i.imgur.com/ILIxWIL.jpeg","text":"Hey toi, là, derrière ton écran… il paraît que c’est ton anniversaire 🎉👀"},
+      {"img":"https://i.imgur.com/Xkn7Wtl.jpeg","text":"Chaque seconde à tes côtés est précieuse. Samsung Galaxy Watch 7... rien que pour toi ❤️"}
+    ];
+
+    let current = 0;
+    const baseImg = document.getElementById('slide-img');
+    const baseText = document.getElementById('slide-text');
+    const overlay = document.getElementById('overlay');
+    const overlayImg = document.getElementById('overlay-img');
+    const heart = document.getElementById('heart-shape');
+
+    function nextSlide(){
+      const next = (current + 1) % slides.length;
+      // prepare overlay with next image
+      overlayImg.setAttribute('href', slides[next].img);
+      // show overlay and run animation
+      overlay.classList.add('show');
+      overlay.classList.add('play');
+      heart.getAnimations().forEach(a => a.cancel()); // reset if needed
+      // Force reflow to restart animation (Safari compatibility)
+      void heart.offsetWidth;
+      // start animation by toggling class
+      heart.classList.remove('noop'); // noop class not used, ensures style recalc
+
+      // After animation ends, switch base and hide overlay
+      setTimeout(() => {
+        current = next;
+        baseImg.src = slides[current].img;
+        baseText.textContent = slides[current].text;
+        overlay.classList.remove('show');
+        overlay.classList.remove('play');
+      }, 820); // match animation duration
+    }
+  </script>
+</body>
+</html>
