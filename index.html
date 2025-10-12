@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#ff6b81">
+  <link rel="manifest" href="manifest.json">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Mimi">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="apple-touch-icon" href="heart-512.png">
+  <title>Joyeux Anniversaire Mimi</title>
+  <style>
+    :root { --accent:#ff6b81; --bg:#fffaf7; }
+    *{box-sizing:border-box}
+    body { font-family: Arial, sans-serif; background: var(--bg); margin: 0; color: #333; text-align: center; padding: 24px 16px 40px; }
+    h1{ color:#d94a5f; margin:0 0 10px; }
+    .card { max-width: 760px; margin: 0 auto 18px; background:#fff; border:1px solid #f2d7dd; border-radius:14px; padding:16px; text-align:left; box-shadow: 0 4px 12px rgba(0,0,0,.06); }
+    .btn { display:inline-block; margin-top:12px; padding:14px 18px; border:0; border-radius:10px; background: var(--accent); color:#fff; font-size:16px; cursor:pointer; box-shadow: 0 6px 18px rgba(255,107,129,.35); }
+    .hint{font-size:14px; color:#666}
+  </style>
+</head>
+<body>
+  <h1>🎉 Joyeux Anniversaire Mimi !</h1>
+
+  <section id="tutos" class="card">
+    <h3>📱 Installer en plein écran</h3>
+
+    <div id="tuto-chrome" style="display:none">
+      <ol>
+        <li>⋮ en haut à droite</li>
+        <li><b>Installer</b> (ou <b>Ajouter à l’écran d’accueil</b> → <b>Installer</b>)</li>
+        <li>Ouvre l’icône <b>❤️ Mimi</b> depuis l’accueil</li>
+      </ol>
+    </div>
+
+    <div id="tuto-samsung" style="display:none">
+      <ol>
+        <li>☰ en bas à droite</li>
+        <li><b>Ajouter page à</b> → <b>Écran d’accueil</b> (ou <b>Installer application</b>)</li>
+        <li>Ouvre l’icône <b>❤️ Mimi</b></li>
+      </ol>
+    </div>
+
+    <div id="tuto-safari" style="display:none">
+      <ol>
+        <li>Ouvrir dans <b>Safari</b></li>
+        <li>🔁 <b>Partager</b> → <b>Sur l’écran d’accueil</b> → <b>Ajouter</b></li>
+        <li>Ouvre l’icône <b>❤️ Mimi</b></li>
+      </ol>
+      <p class="hint">Astuce : sur iPhone, l’installation doit se faire depuis Safari (pas Chrome).</p>
+    </div>
+  </section>
+
+  <div class="card" style="text-align:center">
+    <p>Tu peux aussi lancer directement la surprise :</p>
+    <a class="btn" href="diapo.html">Lancer la surprise 💝</a>
+  </div>
+
+  <script>
+    if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); }
+    const ua = navigator.userAgent;
+    const isAndroid = /Android/i.test(ua);
+    const isSamsung = /SamsungBrowser/i.test(ua);
+    const isIOS = /iPhone|iPad|iPod/i.test(ua);
+    const isSafari = isIOS && /Safari/i.test(ua) && !/CriOS|FxiOS|EdgiOS/i.test(ua);
+    const isChromeAndroid = isAndroid && /Chrome/i.test(ua) && !isSamsung;
+
+    if (isChromeAndroid) document.getElementById('tuto-chrome').style.display = 'block';
+    else if (isSamsung) document.getElementById('tuto-samsung').style.display = 'block';
+    else if (isSafari) document.getElementById('tuto-safari').style.display = 'block';
+    else document.getElementById('tuto-chrome').style.display = 'block';
+  </script>
+</body>
+</html>
