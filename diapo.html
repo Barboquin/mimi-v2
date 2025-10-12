@@ -1,0 +1,103 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#ff6b81" />
+  <link rel="manifest" href="manifest.json" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Mimi" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="apple-touch-icon" href="heart-512.png" />
+  <title>Surprise Mimi</title>
+  <style>
+    :root{ --bg:#fffaf7; --txt:#333; --dur:850ms; }
+    *{ box-sizing:border-box; }
+    html, body { height:100%; }
+    body{
+      margin:0; background:var(--bg); color:var(--txt);
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+      height:100dvh; overflow:hidden; text-align:center; font-family:Arial, sans-serif;
+    }
+    img{
+      max-width:90vw; max-height:70vh; border-radius:10px;
+      box-shadow:0 4px 15px rgba(0,0,0,.2); user-select:none; -webkit-user-drag:none;
+    }
+    p{ font-size:1.5em; margin-top:20px; padding:0 20px; }
+    .container{ cursor:pointer; position:relative; }
+
+    /* Overlay heart (white) */
+    .overlay{
+      position:fixed; inset:0; display:grid; place-items:center;
+      pointer-events:none; opacity:0; transition:opacity 120ms ease;
+    }
+    .overlay.active{ opacity:1; }
+    .heart{
+      width:20vmin; aspect-ratio:1;
+      background:#fff;
+      -webkit-mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox=\"0 0 100 100\"><path d=\"M50 86 C 20 66, 5 50, 5 31 C 5 18, 16 10, 27 10 C 36 10, 43 15, 50 23 C 57 15, 64 10, 73 10 C 84 10, 95 18, 95 31 C 95 50, 80 66, 50 86 Z\" fill=\"black\"/></svg>') center / contain no-repeat;
+              mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox=\"0 0 100 100\"><path d=\"M50 86 C 20 66, 5 50, 5 31 C 5 18, 16 10, 27 10 C 36 10, 43 15, 50 23 C 57 15, 64 10, 73 10 C 84 10, 95 18, 95 31 C 95 50, 80 66, 50 86 Z\" fill=\"black\"/></svg>') center / contain no-repeat;
+      transform: scale(0.05);
+    }
+    .zoom{ animation: heartZoom var(--dur) ease forwards; }
+    @keyframes heartZoom{
+      from{ transform: scale(0.05); }
+      to{ transform: scale(8); }
+    }
+  </style>
+</head>
+<body onclick="nextSlide()">
+  <div class="container">
+    <img id="slide-img" src="https://i.imgur.com/DCDNgl0.jpeg" alt="Anniversaire Mimi" />
+    <p id="slide-text">Tu es belle, même dans la plus simple des versions de toi.</p>
+  </div>
+
+  <!-- White heart overlay -->
+  <div id="overlay" class="overlay" aria-hidden="true">
+    <div id="heart" class="heart"></div>
+  </div>
+
+  <script>
+    const slides = [
+      {"img":"https://i.imgur.com/DCDNgl0.jpeg","text":"Tu es belle, même dans la plus simple des versions de toi."},
+      {"img":"https://i.imgur.com/b3LdfWF.jpeg","text":"Toi, les photos, c’est une histoire d’amour… et chaque cliché est une œuvre."},
+      {"img":"https://i.imgur.com/Fshz30s.jpeg","text":"Ta gentillesse éclaire mes journées comme un soleil doux."},
+      {"img":"https://i.imgur.com/VzijnKr.jpeg","text":"Derrière ton regard tendre, il y a une femme forte, qui avance toujours."},
+      {"img":"https://i.imgur.com/lmDRmCC.jpeg","text":"Même au travail, tu rayonnes… ton sérieux m’impressionne."},
+      {"img":"https://i.imgur.com/lI71y3V.jpeg","text":"Toi + Moi = Nous. Et c’est ma plus belle équation."},
+      {"img":"https://i.imgur.com/ILIxWIL.jpeg","text":"Hey toi, là, derrière ton écran… il paraît que c’est ton anniversaire 🎉👀"},
+      {"img":"https://i.imgur.com/Xkn7Wtl.jpeg","text":"Chaque seconde à tes côtés est précieuse. Samsung Galaxy Watch 7... rien que pour toi ❤️"}
+    ];
+
+    let current = 0;
+    const baseImg = document.getElementById('slide-img');
+    const baseText = document.getElementById('slide-text');
+    const overlay = document.getElementById('overlay');
+    const heart = document.getElementById('heart');
+
+    function nextSlide(){
+      const next = (current + 1) % slides.length;
+
+      // Start overlay animation
+      overlay.classList.add('active');
+      heart.classList.remove('zoom'); // reset
+      void heart.offsetWidth; // reflow to restart animation
+      heart.classList.add('zoom');
+
+      // Change image near end of animation so the white heart hides the swap
+      const dur = 850; // must match --dur
+      setTimeout(() => {
+        baseImg.src = slides[next].img;
+        baseText.textContent = slides[next].text;
+      }, Math.floor(dur * 0.75)); // swap at 75%
+
+      // Hide overlay slightly after animation completes
+      setTimeout(() => {
+        overlay.classList.remove('active');
+        current = next;
+      }, dur + 80);
+    }
+  </script>
+</body>
+</html>
