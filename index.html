@@ -1,56 +1,50 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#ff6b81">
-  <link rel="manifest" href="manifest.json">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mimi 28</title>
+
+  <!-- ⚡ PWA essentials -->
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#ff6b81" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Mimi 28" />
+  <link rel="apple-touch-icon" href="heart-512.png" />
+
   <script>
+    // ⏳ Redirection après 500ms vers la page d'accueil animée
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        window.location.href = 'accueil.html';
+      }, 500);
+    });
+
+    // 📌 Enregistrement du service worker pour la PWA
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('sw.js');
+      navigator.serviceWorker.register('sw.js').catch(err => console.log('SW erreur', err));
     }
   </script>
-  <title>Joyeux Anniversaire Mimi</title>
+
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background: #fffaf7;
       margin: 0;
-      padding: 2em;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #fffaf7;
       color: #333;
-      text-align: center;
+      font-family: Arial, sans-serif;
     }
-    .btn {
-      margin-top: 30px;
-      padding: 15px 25px;
-      background-color: #ff6b81;
-      color: white;
-      font-size: 1.2em;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-    }
-    h1 {
-      font-size: 2em;
-      color: #e63946;
-    }
-    ol {
-      text-align: left;
-      margin: auto;
-      max-width: 600px;
-      font-size: 1.1em;
+    .loader {
+      font-size: 18px;
+      opacity: 0.8;
     }
   </style>
 </head>
 <body>
-  <h1>🎉 Joyeux Anniversaire Mimi !</h1>
-  <p>Avant d’ouvrir ta surprise, installe-la comme une application pour un vrai plein écran :</p>
-  <ol>
-    <li>Appuie sur les trois petits points <strong>(⋮)</strong> en haut à droite</li>
-    <li>Sélectionne <strong>"Ajouter à l’écran d’accueil"</strong>, puis <strong>Ajouter</strong></li>
-    <li>Ouvre la nouvelle icône <strong>❤️ Mimi</strong> depuis l’écran d’accueil</li>
-  </ol>
-  <p>Ou lance directement la surprise :</p>
-  <button class="btn" onclick="window.location.href='diapo.html'">Lancer la surprise 💝</button>
+  <div class="loader">Chargement… ✨</div>
 </body>
 </html>
