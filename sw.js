@@ -7,8 +7,8 @@ const ASSETS = [
   '/diapo.html',
   '/manifest.json',
   '/anniversaire_lingala_96kbps.mp3',
-  '/icon-192.png',
-  '/icon-512.png'
+  '/heart-192.png',
+  '/heart-512.png'
 ];
 
 // Installation → met en cache la nouvelle version
