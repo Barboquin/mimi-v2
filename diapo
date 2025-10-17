@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Surprise Mimi</title>
+  <meta name="theme-color" content="#000000" />
+  <style>
+    :root{ --dur:850ms; --fg:#fff; --fg2:#f1f1f1; --card:#111; }
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
+    body{
+      margin:0; background:#000; color:var(--fg);
+      display:flex; flex-direction:column; align-items:center; justify-content:flex-start;
+      min-height:100dvh; font-family: Arial, Helvetica, sans-serif; text-align:center;
+      padding:16px 0 20px; overflow:hidden;
+    }
+
+    #mute-btn{
+      position: fixed; top: 10px; right: 10px; z-index: 10;
+      background: rgba(255,255,255,.15); color:#fff; border:none;
+      padding:8px 14px; border-radius:20px; font-size:14px; backdrop-filter: blur(6px);
+    }
+
+    #stage{
+      width:92vw; max-width:780px;
+      height: calc(100dvh - 200px);
+      background: var(--card);
+      border-radius:16px; box-shadow:0 8px 22px rgba(0,0,0,.45);
+      display:grid; place-items:center; overflow:hidden; margin:60px auto 0;
+      position:relative;
+    }
+    #stage img{
+      max-width:100%; max-height:100%;
+      object-fit:contain;
+      user-select:none; -webkit-user-drag:none;
+    }
+
+    #slide-text{
+      color:var(--fg2);
+      font-size: clamp(18px, 4.2vw, 28px);
+      line-height:1.25; margin:16px 16px 0;
+    }
+
+    .intro{
+      width:100%; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center;
+      padding:24px;
+      background: radial-gradient(800px 500px at 50% 25%, #1b1b1b, #0a0a0a);
+      position:relative; overflow:hidden;
+    }
+    .intro .badge{ color:#ffd7de; margin-bottom:8px; }
+    .intro h1{ margin:0 0 8px; font-size:clamp(24px,6vw,40px); }
+    .intro .hint{ opacity:.85; font-size:14px; margin-top:10px; }
+
+    .confetti { position:absolute; inset:0; pointer-events:none; overflow:hidden; }
+    .heartFall {
+      position:absolute; top:-40px; width:16px; aspect-ratio:1; transform:rotate(45deg);
+      background:#ff6b81; opacity:.8;
+      animation: fall linear infinite;
+    }
+    .heartFall::before, .heartFall::after {
+      content:""; position:absolute; width:100%; height:100%; background:#ff6b81; border-radius:50%;
+    }
+    .heartFall::before { top:-50%; }
+    .heartFall::after { left:-50%; }
+    @keyframes fall {
+      from{ transform:translateY(-10vh) rotate(45deg) }
+      to{ transform:translateY(110vh) rotate(45deg)}
+    }
+
+    .overlay{ position:fixed; inset:0; display:grid; place-items:center; pointer-events:none; opacity:0; transition:opacity .12s ease; }
+    .overlay.active{ opacity:1; }
+    .heart{
+      width:20vmin; aspect-ratio:1; background:#ff0000;
+      -webkit-mask:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M50 86 C 20 66, 5 50, 5 31 C 5 18, 16 10, 27 10 C 36 10, 43 15, 50 23 C 57 15, 64 10, 73 10 C 84 10, 95 18, 95 31 C 95 50, 80 66, 50 86 Z" fill="black"/></svg>') center/contain no-repeat;
+              mask:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M50 86 C 20 66, 5 50, 5 31 C 5 18, 16 10, 27 10 C 36 10, 43 15, 50 23 C 57 15, 64 10, 73 10 C 84 10, 95 18, 95 31 C 95 50, 80 66, 50 86 Z" fill="black"/></svg>') center/contain no-repeat;
+      transform:scale(.05);
+    }
+    .zoom{ animation:heartZoom var(--dur) ease forwards; }
+    @keyframes heartZoom{ from{ transform:scale(.05) } to{ transform:scale(8) } }
+
+    .flash { position: fixed; inset: 0; background: rgba(255,255,255,0); pointer-events: none; opacity: 0; }
+    .flash.active { animation: flashBlink 650ms ease forwards; }
+    @keyframes flashBlink {
+      0%   { background: rgba(255,255,255,0);   opacity: 0; }
+      35%  { background: rgba(255,255,255,0.22); opacity: 1; }
+      100% { background: rgba(255,255,255,0);   opacity: 0; }
+    }
+    #stage.final-pop { animation: finalPop 700ms cubic-bezier(.2,.8,.2,1) both; }
+    @keyframes finalPop {
+      from { transform: scale(.96); filter: brightness(.92); }
+      to   { transform: scale(1);    filter: none; }
+    }
+
+    .final-message {
+      display:flex; flex-direction:column; justify-content:center; align-items:center;
+      text-align:center; padding:20px;
+      font-size:clamp(20px,4.5vw,30px);
+      color:#fff;
+    }
+    .final-message small {
+      display:block; margin-top:12px; font-size:0.7em; opacity:0.8;
+    }
+  </style>
+</head>
+<body onclick="nextSlide()">
+  <button id="mute-btn" onclick="toggleMute(event)">🔊 Son</button>
+
+  <div id="stage">
+    <div id="intro" class="intro">
+      <div class="confetti" id="confetti"></div>
+      <div class="badge">💝 Mimi • 28 ans</div>
+      <h1>Bienvenue sur l’app de Mimi</h1>
+      <p>Un petit voyage en 8 photos… et une surprise à la fin ✨</p>
+      <p class="hint">👉 Touchez l’écran pour commencer (musique + cœur)</p>
+    </div>
+    <img id="slide-img" src="" alt="" style="display:none" />
+    <div id="final-msg" class="final-message" style="display:none">
+      ✨ Ce n’est pas grand-chose,<br>
+      mais ma plus grande satisfaction...<br>
+      c’est de te faire plaisir ❤️
+      <small>Na lingui yo</small>
+    </div>
+  </div>
+
+  <p id="slide-text" style="display:none"></p>
+
+  <div id="overlay" class="overlay" aria-hidden="true"><div id="heart" class="heart"></div></div>
+  <div id="flash" class="flash" aria-hidden="true"></div>
+
+  <audio id="music" src="anniversaire_lingala_96kbps.mp3" loop></audio>
+
+  <script>
+    const slides = [
+      { type:'intro' },
+      { img:"https://i.imgur.com/DCDNgl0.jpeg", text:"Tu es belle, même dans la plus simple des versions de toi." },
+      { img:"https://i.imgur.com/b3LdfWF.jpeg", text:"Toi, les photos, c’est une histoire d’amour… et chaque cliché est une œuvre." },
+      { img:"https://i.imgur.com/Fshz30s.jpeg", text:"Ta gentillesse éclaire mes journées comme un soleil doux." },
+      { img:"https://i.imgur.com/VzijnKr.jpeg", text:"Derrière ton regard tendre, il y a une femme forte, qui avance toujours." },
+      { img:"https://i.imgur.com/lmDRmCC.jpeg", text:"Même au travail, tu rayonnes… ton sérieux m’impressionne." },
+      { img:"https://i.imgur.com/lI71y3V.jpeg", text:"Toi + Moi = Nous. Et c’est ma plus belle équation." },
+      { img:"https://i.imgur.com/ILIxWIL.jpeg", text:"Hey toi, là, derrière ton écran… il paraît que c’est ton anniversaire 🎉👀" },
+      { img:"https://i.imgur.com/Xkn7Wtl.jpeg", text:"Chaque seconde à tes côtés est précieuse. Samsung Galaxy Watch 7... rien que pour toi ❤️" },
+      { img:"https://i.imgur.com/xcXbwYP.jpeg", text:"🎉 Et pour finir en beauté…\nJe t’invite toi et 3 de tes amies à un brunch dimanche 🥐☕🍊" },
+      { type:'final' }
+    ];
+
+    let current = 0, musicStarted = false;
+
+    const stage = document.getElementById('stage');
+    const intro = document.getElementById('intro');
+    const baseImg = document.getElementById('slide-img');
+    const caption = document.getElementById('slide-text');
+    const overlay = document.getElementById('overlay');
+    const heart = document.getElementById('heart');
+    const flash = document.getElementById('flash');
+    const music = document.getElementById('music');
+    const muteBtn = document.getElementById('mute-btn');
+    const finalMsg = document.getElementById('final-msg');
+
+    function showSlide(i){
+      const s = slides[i];
+      intro.style.display = 'none';
+      baseImg.style.display = 'none';
+      caption.style.display = 'none';
+      finalMsg.style.display = 'none';
+
+      if (s.type === 'intro'){
+        intro.style.display = 'flex';
+      } else if (s.type === 'final'){
+        finalMsg.style.display = 'flex';
+      } else {
+        baseImg.style.display = 'block';
+        caption.style.display = 'block';
+        baseImg.src = s.img;
+        caption.textContent = s.text;
+      }
+      resizeStage();
+    }
+
+    function resizeStage(){
+      const capH = (caption.style.display === 'none') ? 0 : caption.offsetHeight;
+      const reserved = 120 + capH;
+      stage.style.height = Math.max(240, Math.round(window.innerHeight - reserved)) + 'px';
+    }
+    window.addEventListener('resize', resizeStage);
+
+    showSlide(0);
+
+    function nextSlide(){
+      if (!musicStarted){ music.play().catch(()=>{}); musicStarted = true; }
+
+      const next = (current + 1) % slides.length;
+      const isSpecial = (next === slides.length - 2); // brunch
+      if (isSpecial) {
+        flash.classList.remove('active'); void flash.offsetWidth; flash.classList.add('active');
+        setTimeout(() => { current = next; showSlide(current); stage.classList.add('final-pop'); }, 330);
+        setTimeout(() => { stage.classList.remove('final-pop'); }, 1100);
+      } else {
+        overlay.classList.add('active');
+        heart.classList.remove('zoom'); void heart.offsetWidth; heart.classList.add('zoom');
+        const dur = 850;
+        setTimeout(() => { current = next; showSlide(current); }, Math.floor(dur * 0.75));
+        setTimeout(() => overlay.classList.remove('active'), dur + 80);
+      }
+    }
+
+    function toggleMute(e){
+      e.stopPropagation();
+      music.muted = !music.muted;
+      muteBtn.textContent = music.muted ? "🔇 Muet" : "🔊 Son";
+    }
+
+    const cf = document.getElementById('confetti');
+    for (let i=0;i<25;i++){
+      const h=document.createElement('div');
+      h.className='heartFall';
+      h.style.left=(Math.random()*100)+'%';
+      h.style.animationDuration=(5+Math.random()*5)+'s';
+      h.style.animationDelay=(Math.random()*5)+'s';
+      h.style.width=(12+Math.random()*12)+'px';
+      cf.appendChild(h);
+    }
+  </script>
+</body>
+</html>
