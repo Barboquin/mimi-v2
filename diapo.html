@@ -16,12 +16,14 @@
       padding:16px 0 20px; overflow:hidden;
     }
 
+    /* Bouton Son/Muet */
     #mute-btn{
       position: fixed; top: 10px; right: 10px; z-index: 10;
       background: rgba(255,255,255,.15); color:#fff; border:none;
       padding:8px 14px; border-radius:20px; font-size:14px; backdrop-filter: blur(6px);
     }
 
+    /* Zone d’affichage (cadre) */
     #stage{
       width:92vw; max-width:780px;
       height: calc(100dvh - 200px);
@@ -36,12 +38,14 @@
       user-select:none; -webkit-user-drag:none;
     }
 
+    /* Légende */
     #slide-text{
       color:var(--fg2);
       font-size: clamp(18px, 4.2vw, 28px);
       line-height:1.25; margin:16px 16px 0;
     }
 
+    /* Slide d’accueil */
     .intro{
       width:100%; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center;
       padding:24px;
@@ -52,11 +56,11 @@
     .intro h1{ margin:0 0 8px; font-size:clamp(24px,6vw,40px); }
     .intro .hint{ opacity:.85; font-size:14px; margin-top:10px; }
 
+    /* Confettis de cœurs (accueil) */
     .confetti { position:absolute; inset:0; pointer-events:none; overflow:hidden; }
     .heartFall {
       position:absolute; top:-40px; width:16px; aspect-ratio:1; transform:rotate(45deg);
-      background:#ff6b81; opacity:.8;
-      animation: fall linear infinite;
+      background:#ff6b81; opacity:.8; animation: fall linear infinite;
     }
     .heartFall::before, .heartFall::after {
       content:""; position:absolute; width:100%; height:100%; background:#ff6b81; border-radius:50%;
@@ -68,10 +72,11 @@
       to{ transform:translateY(110vh) rotate(45deg)}
     }
 
+    /* Transition cœur rouge (par défaut) */
     .overlay{ position:fixed; inset:0; display:grid; place-items:center; pointer-events:none; opacity:0; transition:opacity .12s ease; }
     .overlay.active{ opacity:1; }
     .heart{
-      width:20vmin; aspect-ratio:1; background:#ff0000;
+      width:20vmin; aspect-ratio:1; background:#ff0000; /* ❤️ rouge */
       -webkit-mask:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M50 86 C 20 66, 5 50, 5 31 C 5 18, 16 10, 27 10 C 36 10, 43 15, 50 23 C 57 15, 64 10, 73 10 C 84 10, 95 18, 95 31 C 95 50, 80 66, 50 86 Z" fill="black"/></svg>') center/contain no-repeat;
               mask:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M50 86 C 20 66, 5 50, 5 31 C 5 18, 16 10, 27 10 C 36 10, 43 15, 50 23 C 57 15, 64 10, 73 10 C 84 10, 95 18, 95 31 C 95 50, 80 66, 50 86 Z" fill="black"/></svg>') center/contain no-repeat;
       transform:scale(.05);
@@ -79,19 +84,14 @@
     .zoom{ animation:heartZoom var(--dur) ease forwards; }
     @keyframes heartZoom{ from{ transform:scale(.05) } to{ transform:scale(8) } }
 
-    .flash { position: fixed; inset: 0; background: rgba(255,255,255,0); pointer-events: none; opacity: 0; }
-    .flash.active { animation: flashBlink 650ms ease forwards; }
-    @keyframes flashBlink {
-      0%   { background: rgba(255,255,255,0);   opacity: 0; }
-      35%  { background: rgba(255,255,255,0.22); opacity: 1; }
-      100% { background: rgba(255,255,255,0);   opacity: 0; }
-    }
-    #stage.final-pop { animation: finalPop 700ms cubic-bezier(.2,.8,.2,1) both; }
-    @keyframes finalPop {
-      from { transform: scale(.96); filter: brightness(.92); }
-      to   { transform: scale(1);    filter: none; }
+    /* 🌫️ Transition "flou → net" (5s) utilisée pour la slide BRUNCH uniquement */
+    #stage.blur-seq { animation: blurIn 5s ease forwards; }
+    @keyframes blurIn {
+      0%   { filter: blur(14px) brightness(.9); opacity:.88; }
+      100% { filter: blur(0)   brightness(1);   opacity:1;   }
     }
 
+    /* Slide finale (message) */
     .final-message {
       display:flex; flex-direction:column; justify-content:center; align-items:center;
       text-align:center; padding:20px;
@@ -107,6 +107,7 @@
   <button id="mute-btn" onclick="toggleMute(event)">🔊 Son</button>
 
   <div id="stage">
+    <!-- Accueil -->
     <div id="intro" class="intro">
       <div class="confetti" id="confetti"></div>
       <div class="badge">💝 Mimi • 28 ans</div>
@@ -114,7 +115,9 @@
       <p>Un petit voyage en 8 photos… et une surprise à la fin ✨</p>
       <p class="hint">👉 Touchez l’écran pour commencer (musique + cœur)</p>
     </div>
+    <!-- Image -->
     <img id="slide-img" src="" alt="" style="display:none" />
+    <!-- Message final -->
     <div id="final-msg" class="final-message" style="display:none">
       ✨ Ce n’est pas grand-chose,<br>
       mais ma plus grande satisfaction...<br>
@@ -125,9 +128,10 @@
 
   <p id="slide-text" style="display:none"></p>
 
+  <!-- Cœur rouge (transitions normales) -->
   <div id="overlay" class="overlay" aria-hidden="true"><div id="heart" class="heart"></div></div>
-  <div id="flash" class="flash" aria-hidden="true"></div>
 
+  <!-- Musique (au 1er clic) -->
   <audio id="music" src="anniversaire_lingala_96kbps.mp3" loop></audio>
 
   <script>
@@ -142,7 +146,7 @@
       { img:"https://i.imgur.com/ILIxWIL.jpeg", text:"Hey toi, là, derrière ton écran… il paraît que c’est ton anniversaire 🎉👀" },
       { img:"https://i.imgur.com/Xkn7Wtl.jpeg", text:"Chaque seconde à tes côtés est précieuse. Samsung Galaxy Watch 7... rien que pour toi ❤️" },
       { img:"https://i.imgur.com/xcXbwYP.jpeg", text:"🎉 Et pour finir en beauté…\nJe t’invite toi et 3 de tes amies à un brunch dimanche 🥐☕🍊" },
-      { type:'final' }
+      { type:'final' } // dernière slide (message)
     ];
 
     let current = 0, musicStarted = false;
@@ -153,7 +157,6 @@
     const caption = document.getElementById('slide-text');
     const overlay = document.getElementById('overlay');
     const heart = document.getElementById('heart');
-    const flash = document.getElementById('flash');
     const music = document.getElementById('music');
     const muteBtn = document.getElementById('mute-btn');
     const finalMsg = document.getElementById('final-msg');
@@ -185,20 +188,29 @@
     }
     window.addEventListener('resize', resizeStage);
 
+    // Accueil au chargement
     showSlide(0);
 
     function nextSlide(){
+      // 1er clic → musique
       if (!musicStarted){ music.play().catch(()=>{}); musicStarted = true; }
 
       const next = (current + 1) % slides.length;
-      const isSpecial = (next === slides.length - 2); // brunch
-      if (isSpecial) {
-        flash.classList.remove('active'); void flash.offsetWidth; flash.classList.add('active');
-        setTimeout(() => { current = next; showSlide(current); stage.classList.add('final-pop'); }, 330);
-        setTimeout(() => { stage.classList.remove('final-pop'); }, 1100);
+      const brunchIndex = slides.length - 2; // avant-dernière = brunch
+      const goingToBrunch = (next === brunchIndex);
+
+      if (goingToBrunch) {
+        // 🌫️ Transition spéciale : flou → net (5s) pour la slide "brunch"
+        current = next;          // affiche d'abord la slide brunch
+        showSlide(current);
+        stage.classList.remove('blur-seq');  // reset si rejoué
+        void stage.offsetWidth;              // reflow pour relancer l'anim
+        stage.classList.add('blur-seq');     // anime 5s du flou vers net
       } else {
+        // Transitions normales : cœur rouge
         overlay.classList.add('active');
         heart.classList.remove('zoom'); void heart.offsetWidth; heart.classList.add('zoom');
+
         const dur = 850;
         setTimeout(() => { current = next; showSlide(current); }, Math.floor(dur * 0.75));
         setTimeout(() => overlay.classList.remove('active'), dur + 80);
@@ -211,6 +223,7 @@
       muteBtn.textContent = music.muted ? "🔇 Muet" : "🔊 Son";
     }
 
+    // Cœurs qui tombent (accueil)
     const cf = document.getElementById('confetti');
     for (let i=0;i<25;i++){
       const h=document.createElement('div');
